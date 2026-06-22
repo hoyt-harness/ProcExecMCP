@@ -58,16 +58,18 @@ def sanitize_error_message(message: str) -> str:
         'Connection to [IP] failed'
     """
     # Replace absolute Windows paths
-    message = re.sub(r'[A-Z]:\\[^\\s]+', lambda m: sanitize_path(m.group(0)), message)
+    message = re.sub(r"[A-Z]:\\[^\\s]+", lambda m: sanitize_path(m.group(0)), message)
 
     # Replace absolute Unix paths
-    message = re.sub(r'/(?:home|root|Users)/[^\s]+', lambda m: sanitize_path(m.group(0)), message)
+    message = re.sub(
+        r"/(?:home|root|Users)/[^\s]+", lambda m: sanitize_path(m.group(0)), message
+    )
 
     # Remove usernames
-    message = re.sub(r'user\s+[\w]+', 'user [redacted]', message, flags=re.IGNORECASE)
+    message = re.sub(r"user\s+[\w]+", "user [redacted]", message, flags=re.IGNORECASE)
 
     # Remove IP addresses
-    message = re.sub(r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b', '[IP]', message)
+    message = re.sub(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b", "[IP]", message)
 
     return message
 
@@ -150,7 +152,9 @@ def validate_path(path_str: str, must_exist: bool = True) -> Path:
         blocked_paths = _get_blocked_paths()
         for blocked in blocked_paths:
             if path_str_normalized.startswith(blocked.lower()):
-                raise ValueError(f"Access to sensitive path not allowed: {sanitize_path(str(path))}")
+                raise ValueError(
+                    f"Access to sensitive path not allowed: {sanitize_path(str(path))}"
+                )
 
         return path
 

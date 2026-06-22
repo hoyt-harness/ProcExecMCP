@@ -7,6 +7,6 @@ from .processes import list_processes, kill_process
 __all__ = [
     "search_file_contents",
     "execute_command",
-    "list_processes",    # Phase 5
-    "kill_process",      # Phase 6
+    "list_processes",  # Phase 5
+    "kill_process",  # Phase 6
 ]

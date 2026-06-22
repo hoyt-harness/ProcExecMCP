@@ -3,6 +3,7 @@
 import sys
 
 from .server import mcp
+
 # Import all tool modules to register @mcp.tool() decorators
 from .tools import search, execute, processes  # noqa: F401
 

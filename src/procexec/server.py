@@ -53,7 +53,7 @@ class ServerConfig:
             timeout_ms=timeout_ms,
             max_output_bytes=max_output,
             blocked_paths=blocked_paths if blocked_paths else None,
-            enable_process_kill=enable_kill
+            enable_process_kill=enable_kill,
         )
 
 

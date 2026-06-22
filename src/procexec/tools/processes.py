@@ -70,7 +70,7 @@ def _get_process_info(proc: psutil.Process) -> ProcessInfo | None:
                 cpu_percent=round(cpu_percent, 2),
                 memory_mb=round(memory_mb, 2),
                 cmdline=cmdline,
-                status=status
+                status=status,
             )
 
     except psutil.NoSuchProcess:
@@ -91,8 +91,7 @@ def _get_process_info(proc: psutil.Process) -> ProcessInfo | None:
 
 
 def _filter_processes(
-    processes: list[ProcessInfo],
-    name_filter: str | None
+    processes: list[ProcessInfo], name_filter: str | None
 ) -> list[ProcessInfo]:
     """Filter processes by name (case-insensitive substring match).
 
@@ -115,15 +114,11 @@ def _filter_processes(
 
     # Case-insensitive substring match
     filter_lower = name_filter.lower()
-    return [
-        proc for proc in processes
-        if filter_lower in proc.name.lower()
-    ]
+    return [proc for proc in processes if filter_lower in proc.name.lower()]
 
 
 def _sort_processes(
-    processes: list[ProcessInfo],
-    sort_by: ProcessSortBy
+    processes: list[ProcessInfo], sort_by: ProcessSortBy
 ) -> list[ProcessInfo]:
     """Sort processes by specified criteria.
 
@@ -161,8 +156,7 @@ def _sort_processes(
 
 
 def _limit_processes(
-    processes: list[ProcessInfo],
-    limit: int
+    processes: list[ProcessInfo], limit: int
 ) -> tuple[list[ProcessInfo], bool]:
     """Limit number of processes returned and indicate if truncated.
 
@@ -191,7 +185,7 @@ async def list_processes(
     name_filter: str | None = None,
     sort_by: ProcessSortBy = ProcessSortBy.CPU,
     limit: int = 100,
-    ctx: Context | None = None
+    ctx: Context | None = None,
 ) -> ListProcessesOutput:
     """List running processes with optional filtering and sorting.
 
@@ -243,9 +237,7 @@ async def list_processes(
 
     # Validate inputs via Pydantic
     input_data = ListProcessesInput(
-        name_filter=name_filter,
-        sort_by=sort_by,
-        limit=limit
+        name_filter=name_filter, sort_by=sort_by, limit=limit
     )
 
     if ctx:
@@ -264,21 +256,14 @@ async def list_processes(
                 all_processes.append(proc_info)
 
         # Filter by name if requested
-        filtered_processes = _filter_processes(
-            all_processes,
-            input_data.name_filter
-        )
+        filtered_processes = _filter_processes(all_processes, input_data.name_filter)
 
         # Sort by specified criteria
-        sorted_processes = _sort_processes(
-            filtered_processes,
-            input_data.sort_by
-        )
+        sorted_processes = _sort_processes(filtered_processes, input_data.sort_by)
 
         # Apply limit and check if truncated
         limited_processes, truncated = _limit_processes(
-            sorted_processes,
-            input_data.limit
+            sorted_processes, input_data.limit
         )
 
         # Calculate retrieval time
@@ -295,18 +280,19 @@ async def list_processes(
             processes=limited_processes,
             total_count=len(sorted_processes),
             truncated=truncated,
-            retrieval_time_ms=retrieval_time_ms
+            retrieval_time_ms=retrieval_time_ms,
         )
 
     except Exception as e:
         # Unexpected error during process iteration
         raise SanitizedError(
             f"Failed to list processes: {sanitize_error_message(str(e))}",
-            original_error=e
+            original_error=e,
         )
 
 
 # User Story 4: kill_process tool implementation
+
 
 def _validate_process_exists(pid: int) -> bool:
     """Check if a process with the given PID exists.
@@ -326,7 +312,9 @@ def _validate_process_exists(pid: int) -> bool:
     return psutil.pid_exists(pid)
 
 
-def _terminate_process(proc: psutil.Process, timeout_seconds: float) -> tuple[bool, str]:
+def _terminate_process(
+    proc: psutil.Process, timeout_seconds: float
+) -> tuple[bool, str]:
     """Attempt graceful process termination with timeout.
 
     Sends SIGTERM (Unix) or WM_CLOSE (Windows) and waits for process to exit.
@@ -422,7 +410,7 @@ async def kill_process(
     pid: int,
     force: bool = False,
     timeout_seconds: float = 5.0,
-    ctx: Context | None = None
+    ctx: Context | None = None,
 ) -> KillProcessOutput:
     """Terminate a process by PID with graceful or forced termination.
 
@@ -466,11 +454,7 @@ async def kill_process(
     start_time = time.time()
 
     # Validate inputs via Pydantic
-    input_data = KillProcessInput(
-        pid=pid,
-        force=force,
-        timeout_seconds=timeout_seconds
-    )
+    input_data = KillProcessInput(pid=pid, force=force, timeout_seconds=timeout_seconds)
 
     if ctx:
         await ctx.info(
@@ -481,13 +465,14 @@ async def kill_process(
     # Check if process termination is enabled
     # This requires the PROCEXEC_ENABLE_KILL environment variable to be set
     import os
+
     enable_kill = os.environ.get("PROCEXEC_ENABLE_KILL", "false").lower() == "true"
 
     if not enable_kill:
         termination_time_ms = int((time.time() - start_time) * 1000)
         raise SanitizedError(
             "Process termination is disabled. Set PROCEXEC_ENABLE_KILL=true to enable.",
-            original_error=None
+            original_error=None,
         )
 
     # Validate process exists
@@ -501,7 +486,7 @@ async def kill_process(
             pid=input_data.pid,
             message=f"Process {input_data.pid} does not exist",
             termination_time_ms=termination_time_ms,
-            forced=False
+            forced=False,
         )
 
     try:
@@ -525,7 +510,8 @@ async def kill_process(
             if success:
                 await ctx.info(
                     f"Process {input_data.pid} terminated successfully "
-                    f"({'forced' if forced else 'graceful'}), time={termination_time_ms}ms"
+                    f"({'forced' if forced else 'graceful'}), "
+                    f"time={termination_time_ms}ms"
                 )
             else:
                 await ctx.error(
@@ -537,7 +523,7 @@ async def kill_process(
             pid=input_data.pid,
             message=message,
             termination_time_ms=termination_time_ms,
-            forced=forced
+            forced=forced,
         )
 
     except psutil.NoSuchProcess:
@@ -548,7 +534,7 @@ async def kill_process(
             pid=input_data.pid,
             message="Process no longer exists",
             termination_time_ms=termination_time_ms,
-            forced=False
+            forced=False,
         )
 
     except psutil.AccessDenied:
@@ -562,7 +548,7 @@ async def kill_process(
             pid=input_data.pid,
             message="Access denied: insufficient permissions to terminate process",
             termination_time_ms=termination_time_ms,
-            forced=False
+            forced=False,
         )
 
     except Exception as e:
@@ -571,9 +557,11 @@ async def kill_process(
         error_msg = sanitize_error_message(str(e))
 
         if ctx:
-            await ctx.error(f"Unexpected error terminating process {input_data.pid}: {error_msg}")
+            await ctx.error(
+                f"Unexpected error terminating process {input_data.pid}: {error_msg}"
+            )
 
         raise SanitizedError(
             f"Failed to terminate process {input_data.pid}: {error_msg}",
-            original_error=e
+            original_error=e,
         )

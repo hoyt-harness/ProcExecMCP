@@ -8,7 +8,11 @@ from pathlib import Path
 from mcp.server.fastmcp import Context
 
 from ..server import config, mcp
-from ..utils.validation import SanitizedError, sanitize_error_message, validate_directory
+from ..utils.validation import (
+    SanitizedError,
+    sanitize_error_message,
+    validate_directory,
+)
 from .schemas import ExecuteCommandInput, ExecuteCommandOutput
 
 
@@ -48,7 +52,7 @@ def _parse_command_to_args(command: str) -> list[str]:
     except ValueError as e:
         raise SanitizedError(
             f"Failed to parse command: {sanitize_error_message(str(e))}",
-            original_error=e
+            original_error=e,
         )
 
 
@@ -72,7 +76,7 @@ def _validate_working_directory(working_dir: str | None) -> Path | None:
     except ValueError as e:
         raise SanitizedError(
             f"Invalid working directory: {sanitize_error_message(str(e))}",
-            original_error=e
+            original_error=e,
         )
 
 
@@ -92,14 +96,14 @@ def _enforce_output_limit(output: str, max_bytes: int) -> tuple[str, bool]:
         >>> _enforce_output_limit("x" * 2000, 1000)
         ('x' * 1000 + '\\n[Output truncated...]', True)
     """
-    output_bytes = output.encode('utf-8', errors='replace')
+    output_bytes = output.encode("utf-8", errors="replace")
 
     if len(output_bytes) <= max_bytes:
         return output, False
 
     # Truncate to max size
     truncated_bytes = output_bytes[:max_bytes]
-    truncated_str = truncated_bytes.decode('utf-8', errors='replace')
+    truncated_str = truncated_bytes.decode("utf-8", errors="replace")
 
     # Add truncation marker
     truncated_str += "\n[Output truncated...]"
@@ -108,10 +112,7 @@ def _enforce_output_limit(output: str, max_bytes: int) -> tuple[str, bool]:
 
 
 def _execute_subprocess(
-    args: list[str],
-    cwd: Path | None,
-    timeout_seconds: float,
-    capture_output: bool
+    args: list[str], cwd: Path | None, timeout_seconds: float, capture_output: bool
 ) -> tuple[str, str, int, bool]:
     """Execute command via subprocess with security measures.
 
@@ -134,17 +135,20 @@ def _execute_subprocess(
         - Sanitizes error messages
     """
     try:
-        result = subprocess.run(
+        # noqa justification: arbitrary command execution is this tool's
+        # documented purpose; shell=False + list-form args (no shell
+        # parsing) is the mitigation, not an oversight.
+        result = subprocess.run(  # noqa: S603
             args,
             capture_output=capture_output,
             text=True,
-            encoding='utf-8',
-            errors='replace',
+            encoding="utf-8",
+            errors="replace",
             timeout=timeout_seconds,
             cwd=str(cwd) if cwd else None,
             shell=False,  # CRITICAL: Never use shell=True
             check=False,  # Don't raise on non-zero exit
-            stdin=subprocess.DEVNULL  # Prevent stdin hang on Windows
+            stdin=subprocess.DEVNULL,  # Prevent stdin hang on Windows
         )
 
         stdout = result.stdout if result.stdout else ""
@@ -160,29 +164,29 @@ def _execute_subprocess(
     except FileNotFoundError:
         # Command not found
         raise SanitizedError(
-            f"Command not found: {args[0]}. Ensure the command is installed and in PATH.",
-            original_error=None
+            f"Command not found: {args[0]}. "
+            "Ensure the command is installed and in PATH.",
+            original_error=None,
         )
 
     except PermissionError as e:
         # Permission denied
         raise SanitizedError(
             f"Permission denied executing command: {sanitize_error_message(str(e))}",
-            original_error=e
+            original_error=e,
         )
 
     except OSError as e:
         # Other OS errors
         raise SanitizedError(
             f"OS error executing command: {sanitize_error_message(str(e))}",
-            original_error=e
+            original_error=e,
         )
 
     except Exception as e:
         # Unexpected errors
         raise SanitizedError(
-            f"Unexpected error executing command: {type(e).__name__}",
-            original_error=e
+            f"Unexpected error executing command: {type(e).__name__}", original_error=e
         )
 
 
@@ -192,7 +196,7 @@ async def execute_command(
     working_directory: str | None = None,
     timeout_ms: int = 30000,
     capture_output: bool = True,
-    ctx: Context | None = None
+    ctx: Context | None = None,
 ) -> ExecuteCommandOutput:
     """Execute a command safely with timeout and output limits.
 
@@ -240,7 +244,7 @@ async def execute_command(
         command=command,
         working_directory=working_directory,
         timeout_ms=timeout_ms,
-        capture_output=capture_output
+        capture_output=capture_output,
     )
 
     if ctx:
@@ -258,7 +262,7 @@ async def execute_command(
         args=args,
         cwd=cwd,
         timeout_seconds=timeout_seconds,
-        capture_output=input_data.capture_output
+        capture_output=input_data.capture_output,
     )
 
     # Enforce output size limits
@@ -282,5 +286,5 @@ async def execute_command(
         exit_code=exit_code,
         execution_time_ms=execution_time_ms,
         timed_out=timed_out,
-        output_truncated=output_truncated
+        output_truncated=output_truncated,
     )

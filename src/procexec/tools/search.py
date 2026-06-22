@@ -35,8 +35,9 @@ def _check_ripgrep_available() -> str:
             return str(custom_path_obj)
         else:
             raise SanitizedError(
-                f"Custom ripgrep path specified in PROCEXEC_RIPGREP_PATH not found: {custom_path}",
-                original_error=None
+                "Custom ripgrep path specified in PROCEXEC_RIPGREP_PATH "
+                f"not found: {custom_path}",
+                original_error=None,
             )
 
     # Fall back to checking PATH
@@ -44,15 +45,19 @@ def _check_ripgrep_available() -> str:
     if not rg_path:
         raise SanitizedError(
             "Search tool (ripgrep) not available on system. "
-            "Please install ripgrep: https://github.com/BurntSushi/ripgrep#installation "
-            "or set PROCEXEC_RIPGREP_PATH environment variable to the full path to ripgrep binary.",
-            original_error=None
+            "Please install ripgrep: "
+            "https://github.com/BurntSushi/ripgrep#installation "
+            "or set PROCEXEC_RIPGREP_PATH environment variable to the "
+            "full path to ripgrep binary.",
+            original_error=None,
         )
 
     return rg_path
 
 
-def _build_ripgrep_args(input: SearchFileContentsInput, path: Path, ripgrep_path: str) -> list[str]:
+def _build_ripgrep_args(
+    input: SearchFileContentsInput, path: Path, ripgrep_path: str
+) -> list[str]:
     """Build ripgrep command arguments from input parameters.
 
     Args:
@@ -68,7 +73,8 @@ def _build_ripgrep_args(input: SearchFileContentsInput, path: Path, ripgrep_path
         "--json",  # Structured JSON output
         "--line-number",  # Include line numbers
         "--no-heading",  # Format for JSON parsing
-        "--color", "never",  # No ANSI color codes
+        "--color",
+        "never",  # No ANSI color codes
     ]
 
     # Context lines
@@ -102,7 +108,9 @@ def _build_ripgrep_args(input: SearchFileContentsInput, path: Path, ripgrep_path
     return args
 
 
-def _parse_ripgrep_json(json_output: str, max_results: int) -> tuple[list[SearchMatch], int, int]:
+def _parse_ripgrep_json(
+    json_output: str, max_results: int
+) -> tuple[list[SearchMatch], int, int]:
     """Parse ripgrep JSON output into SearchMatch objects.
 
     Args:
@@ -142,13 +150,15 @@ def _parse_ripgrep_json(json_output: str, max_results: int) -> tuple[list[Search
 
                 # If we have a previous match, finalize it before starting new one
                 if current_match:
-                    matches.append(SearchMatch(
-                        file_path=current_match["file_path"],
-                        line_number=current_match["line_number"],
-                        line_text=current_match["line_text"],
-                        context_before=context_before.copy(),
-                        context_after=context_after.copy()
-                    ))
+                    matches.append(
+                        SearchMatch(
+                            file_path=current_match["file_path"],
+                            line_number=current_match["line_number"],
+                            line_text=current_match["line_text"],
+                            context_before=context_before.copy(),
+                            context_after=context_after.copy(),
+                        )
+                    )
                     context_before = []
                     context_after = []
 
@@ -159,7 +169,7 @@ def _parse_ripgrep_json(json_output: str, max_results: int) -> tuple[list[Search
                 current_match = {
                     "file_path": file_path,
                     "line_number": line_number,
-                    "line_text": line_text
+                    "line_text": line_text,
                 }
                 total_count += 1
 
@@ -186,13 +196,15 @@ def _parse_ripgrep_json(json_output: str, max_results: int) -> tuple[list[Search
 
     # Finalize last match if exists
     if current_match and len(matches) < max_results:
-        matches.append(SearchMatch(
-            file_path=current_match["file_path"],
-            line_number=current_match["line_number"],
-            line_text=current_match["line_text"],
-            context_before=context_before,
-            context_after=context_after
-        ))
+        matches.append(
+            SearchMatch(
+                file_path=current_match["file_path"],
+                line_number=current_match["line_number"],
+                line_text=current_match["line_text"],
+                context_before=context_before,
+                context_after=context_after,
+            )
+        )
 
     return matches, total_count, len(files_searched)
 
@@ -211,15 +223,18 @@ def _execute_ripgrep(args: list[str], timeout_ms: int) -> str:
         SanitizedError: If execution fails or times out
     """
     try:
-        result = subprocess.run(
+        # noqa justification: args are built internally from validated
+        # search parameters (see _build_ripgrep_args), not raw user
+        # input; shell=False avoids shell-injection regardless.
+        result = subprocess.run(  # noqa: S603
             args,
             capture_output=True,
             text=True,
-            encoding='utf-8',
-            errors='replace',
+            encoding="utf-8",
+            errors="replace",
             timeout=timeout_ms / 1000.0,  # Convert to seconds
             shell=False,  # SECURITY: Never use shell=True
-            stdin=subprocess.DEVNULL  # Prevent stdin hang on Windows
+            stdin=subprocess.DEVNULL,  # Prevent stdin hang on Windows
         )
 
         # ripgrep exit codes:
@@ -227,7 +242,9 @@ def _execute_ripgrep(args: list[str], timeout_ms: int) -> str:
         # 1 = no matches found (not an error)
         # 2 = error occurred
         if result.returncode == 2:
-            error_msg = result.stderr.strip() if result.stderr else "Search operation failed"
+            error_msg = (
+                result.stderr.strip() if result.stderr else "Search operation failed"
+            )
             raise SanitizedError(sanitize_error_message(error_msg))
 
         return result.stdout
@@ -235,17 +252,16 @@ def _execute_ripgrep(args: list[str], timeout_ms: int) -> str:
     except subprocess.TimeoutExpired:
         raise SanitizedError(
             f"Search operation exceeded timeout limit of {timeout_ms}ms",
-            original_error=None
+            original_error=None,
         )
     except FileNotFoundError:
         raise SanitizedError(
             "Search tool (ripgrep) not found in PATH. Please install ripgrep.",
-            original_error=None
+            original_error=None,
         )
     except Exception as e:
         raise SanitizedError(
-            f"Search operation failed: {type(e).__name__}",
-            original_error=e
+            f"Search operation failed: {type(e).__name__}", original_error=e
         )
 
 
@@ -258,7 +274,7 @@ async def search_file_contents(
     exclude_patterns: list[str] | None = None,
     max_results: int = 1000,
     context_lines: int = 2,
-    ctx: Context | None = None
+    ctx: Context | None = None,
 ) -> SearchFileContentsOutput:
     """Search for patterns in file contents across a directory or file.
 
@@ -296,7 +312,7 @@ async def search_file_contents(
         file_types=file_types,
         exclude_patterns=exclude_patterns,
         max_results=max_results,
-        context_lines=context_lines
+        context_lines=context_lines,
     )
 
     if ctx:
@@ -340,5 +356,5 @@ async def search_file_contents(
         total_matches=total_count,
         files_searched=files_searched,
         truncated=truncated,
-        search_time_ms=search_time_ms
+        search_time_ms=search_time_ms,
     )
