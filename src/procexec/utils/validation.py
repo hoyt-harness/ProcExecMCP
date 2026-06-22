@@ -30,8 +30,12 @@ def sanitize_path(path_str: str) -> str:
         'report.txt'
     """
     try:
-        path = Path(path_str)
-        return path.name if path.name else "[path]"
+        # Split on both separators explicitly: Path() only recognizes the
+        # host OS's separator, so a Windows-style path string ("C:\foo\bar")
+        # parsed on POSIX (or vice versa) returns the whole string as a
+        # single unsplit component instead of the basename.
+        name = path_str.replace("\\", "/").rsplit("/", 1)[-1]
+        return name if name else "[path]"
     except Exception:
         return "[path]"
 
@@ -58,7 +62,7 @@ def sanitize_error_message(message: str) -> str:
         'Connection to [IP] failed'
     """
     # Replace absolute Windows paths
-    message = re.sub(r"[A-Z]:\\[^\\s]+", lambda m: sanitize_path(m.group(0)), message)
+    message = re.sub(r"[A-Z]:\\[^\s]+", lambda m: sanitize_path(m.group(0)), message)
 
     # Replace absolute Unix paths
     message = re.sub(
