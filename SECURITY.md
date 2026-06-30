@@ -13,7 +13,7 @@ We will do our best to respond to your report within 48 hours.
 
 ## Security Standards
 
-This project adheres to the [Positronikal Repository Security Rules](https://github.com/positronikal/coding-standards/blob/main/standards/Repository%20Security%20Rules.md). Please refer to these rules for more information on our security practices.
+This project adheres to the [Positronikal Repository Security Rules](https://github.com/Positronikal/PositronikalCodingStandards/blob/main/standards/Repository%20Security%20Rules.md). Please refer to these rules for more information on our security practices.
 
 ## Disclosure Policy
 
