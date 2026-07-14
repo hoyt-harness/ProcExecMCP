@@ -382,7 +382,7 @@ class TestProcessTermination:
             try:
                 test_proc.kill()
                 test_proc.wait(timeout=1)
-            except Exception:
+            except Exception:  # nosec S110 — kill() in test cleanup; failure is intentional
                 pass
 
     @pytest.mark.asyncio

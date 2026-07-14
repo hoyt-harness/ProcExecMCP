@@ -19,6 +19,7 @@
 # SOURCE CODE
 *.{bat,[bB][aA][tT]}    text eol=crlf
 *.c                     text
+*.ps1                   text eol=lf
 *.class                 binary
 *.{cmd,[cC][mM][dD]}    text eol=crlf
 *.coffee                text

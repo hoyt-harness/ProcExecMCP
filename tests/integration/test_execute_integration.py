@@ -68,7 +68,9 @@ class TestWorkingDirectory:
     @pytest.mark.asyncio
     async def test_execute_with_invalid_working_directory(self):
         """Test that invalid working directory raises error."""
-        with pytest.raises(SanitizedError, match="Invalid working directory|does not exist"):
+        with pytest.raises(
+            SanitizedError, match="Invalid working directory|does not exist"
+        ):
             await execute_command(
                 "python --version",
                 working_directory="/completely/nonexistent/path"
