@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "procexec": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "procexec"]
+    }
+  }
+}

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Unit tests for list_processes tool with mocked psutil."""
 
 import pytest
@@ -113,8 +114,22 @@ class TestFilterProcesses:
     def test_filter_processes_no_filter(self):
         """Test filtering with no filter (returns all)."""
         processes = [
-            ProcessInfo(pid=1, name="python.exe", cpu_percent=5.0, memory_mb=100.0, cmdline="", status="running"),
-            ProcessInfo(pid=2, name="chrome.exe", cpu_percent=10.0, memory_mb=200.0, cmdline="", status="running"),
+            ProcessInfo(
+                pid=1,
+                name="python.exe",
+                cpu_percent=5.0,
+                memory_mb=100.0,
+                cmdline="",
+                status="running",
+            ),
+            ProcessInfo(
+                pid=2,
+                name="chrome.exe",
+                cpu_percent=10.0,
+                memory_mb=200.0,
+                cmdline="",
+                status="running",
+            ),
         ]
 
         result = _filter_processes(processes, None)
@@ -124,9 +139,30 @@ class TestFilterProcesses:
     def test_filter_processes_case_insensitive(self):
         """Test case-insensitive filtering."""
         processes = [
-            ProcessInfo(pid=1, name="Python.exe", cpu_percent=5.0, memory_mb=100.0, cmdline="", status="running"),
-            ProcessInfo(pid=2, name="CHROME.EXE", cpu_percent=10.0, memory_mb=200.0, cmdline="", status="running"),
-            ProcessInfo(pid=3, name="python3", cpu_percent=3.0, memory_mb=80.0, cmdline="", status="running"),
+            ProcessInfo(
+                pid=1,
+                name="Python.exe",
+                cpu_percent=5.0,
+                memory_mb=100.0,
+                cmdline="",
+                status="running",
+            ),
+            ProcessInfo(
+                pid=2,
+                name="CHROME.EXE",
+                cpu_percent=10.0,
+                memory_mb=200.0,
+                cmdline="",
+                status="running",
+            ),
+            ProcessInfo(
+                pid=3,
+                name="python3",
+                cpu_percent=3.0,
+                memory_mb=80.0,
+                cmdline="",
+                status="running",
+            ),
         ]
 
         result = _filter_processes(processes, "python")
@@ -137,9 +173,30 @@ class TestFilterProcesses:
     def test_filter_processes_substring_match(self):
         """Test substring matching in filter."""
         processes = [
-            ProcessInfo(pid=1, name="python.exe", cpu_percent=5.0, memory_mb=100.0, cmdline="", status="running"),
-            ProcessInfo(pid=2, name="pythonw.exe", cpu_percent=2.0, memory_mb=50.0, cmdline="", status="running"),
-            ProcessInfo(pid=3, name="chrome.exe", cpu_percent=10.0, memory_mb=200.0, cmdline="", status="running"),
+            ProcessInfo(
+                pid=1,
+                name="python.exe",
+                cpu_percent=5.0,
+                memory_mb=100.0,
+                cmdline="",
+                status="running",
+            ),
+            ProcessInfo(
+                pid=2,
+                name="pythonw.exe",
+                cpu_percent=2.0,
+                memory_mb=50.0,
+                cmdline="",
+                status="running",
+            ),
+            ProcessInfo(
+                pid=3,
+                name="chrome.exe",
+                cpu_percent=10.0,
+                memory_mb=200.0,
+                cmdline="",
+                status="running",
+            ),
         ]
 
         result = _filter_processes(processes, "python")
@@ -149,8 +206,22 @@ class TestFilterProcesses:
     def test_filter_processes_no_matches(self):
         """Test filtering with no matches."""
         processes = [
-            ProcessInfo(pid=1, name="chrome.exe", cpu_percent=10.0, memory_mb=200.0, cmdline="", status="running"),
-            ProcessInfo(pid=2, name="firefox.exe", cpu_percent=8.0, memory_mb=150.0, cmdline="", status="running"),
+            ProcessInfo(
+                pid=1,
+                name="chrome.exe",
+                cpu_percent=10.0,
+                memory_mb=200.0,
+                cmdline="",
+                status="running",
+            ),
+            ProcessInfo(
+                pid=2,
+                name="firefox.exe",
+                cpu_percent=8.0,
+                memory_mb=150.0,
+                cmdline="",
+                status="running",
+            ),
         ]
 
         result = _filter_processes(processes, "python")
@@ -164,9 +235,30 @@ class TestSortProcesses:
     def test_sort_by_cpu_descending(self):
         """Test sorting by CPU (descending)."""
         processes = [
-            ProcessInfo(pid=1, name="a", cpu_percent=5.0, memory_mb=100.0, cmdline="", status="running"),
-            ProcessInfo(pid=2, name="b", cpu_percent=10.0, memory_mb=200.0, cmdline="", status="running"),
-            ProcessInfo(pid=3, name="c", cpu_percent=2.0, memory_mb=50.0, cmdline="", status="running"),
+            ProcessInfo(
+                pid=1,
+                name="a",
+                cpu_percent=5.0,
+                memory_mb=100.0,
+                cmdline="",
+                status="running",
+            ),
+            ProcessInfo(
+                pid=2,
+                name="b",
+                cpu_percent=10.0,
+                memory_mb=200.0,
+                cmdline="",
+                status="running",
+            ),
+            ProcessInfo(
+                pid=3,
+                name="c",
+                cpu_percent=2.0,
+                memory_mb=50.0,
+                cmdline="",
+                status="running",
+            ),
         ]
 
         result = _sort_processes(processes, ProcessSortBy.CPU)
@@ -178,9 +270,30 @@ class TestSortProcesses:
     def test_sort_by_memory_descending(self):
         """Test sorting by memory (descending)."""
         processes = [
-            ProcessInfo(pid=1, name="a", cpu_percent=5.0, memory_mb=100.0, cmdline="", status="running"),
-            ProcessInfo(pid=2, name="b", cpu_percent=10.0, memory_mb=200.0, cmdline="", status="running"),
-            ProcessInfo(pid=3, name="c", cpu_percent=2.0, memory_mb=50.0, cmdline="", status="running"),
+            ProcessInfo(
+                pid=1,
+                name="a",
+                cpu_percent=5.0,
+                memory_mb=100.0,
+                cmdline="",
+                status="running",
+            ),
+            ProcessInfo(
+                pid=2,
+                name="b",
+                cpu_percent=10.0,
+                memory_mb=200.0,
+                cmdline="",
+                status="running",
+            ),
+            ProcessInfo(
+                pid=3,
+                name="c",
+                cpu_percent=2.0,
+                memory_mb=50.0,
+                cmdline="",
+                status="running",
+            ),
         ]
 
         result = _sort_processes(processes, ProcessSortBy.MEMORY)
@@ -192,9 +305,30 @@ class TestSortProcesses:
     def test_sort_by_pid_ascending(self):
         """Test sorting by PID (ascending)."""
         processes = [
-            ProcessInfo(pid=100, name="a", cpu_percent=5.0, memory_mb=100.0, cmdline="", status="running"),
-            ProcessInfo(pid=10, name="b", cpu_percent=10.0, memory_mb=200.0, cmdline="", status="running"),
-            ProcessInfo(pid=50, name="c", cpu_percent=2.0, memory_mb=50.0, cmdline="", status="running"),
+            ProcessInfo(
+                pid=100,
+                name="a",
+                cpu_percent=5.0,
+                memory_mb=100.0,
+                cmdline="",
+                status="running",
+            ),
+            ProcessInfo(
+                pid=10,
+                name="b",
+                cpu_percent=10.0,
+                memory_mb=200.0,
+                cmdline="",
+                status="running",
+            ),
+            ProcessInfo(
+                pid=50,
+                name="c",
+                cpu_percent=2.0,
+                memory_mb=50.0,
+                cmdline="",
+                status="running",
+            ),
         ]
 
         result = _sort_processes(processes, ProcessSortBy.PID)
@@ -206,9 +340,30 @@ class TestSortProcesses:
     def test_sort_by_name_ascending(self):
         """Test sorting by name (ascending, case-insensitive)."""
         processes = [
-            ProcessInfo(pid=1, name="Zebra", cpu_percent=5.0, memory_mb=100.0, cmdline="", status="running"),
-            ProcessInfo(pid=2, name="Apple", cpu_percent=10.0, memory_mb=200.0, cmdline="", status="running"),
-            ProcessInfo(pid=3, name="banana", cpu_percent=2.0, memory_mb=50.0, cmdline="", status="running"),
+            ProcessInfo(
+                pid=1,
+                name="Zebra",
+                cpu_percent=5.0,
+                memory_mb=100.0,
+                cmdline="",
+                status="running",
+            ),
+            ProcessInfo(
+                pid=2,
+                name="Apple",
+                cpu_percent=10.0,
+                memory_mb=200.0,
+                cmdline="",
+                status="running",
+            ),
+            ProcessInfo(
+                pid=3,
+                name="banana",
+                cpu_percent=2.0,
+                memory_mb=50.0,
+                cmdline="",
+                status="running",
+            ),
         ]
 
         result = _sort_processes(processes, ProcessSortBy.NAME)
@@ -224,7 +379,14 @@ class TestLimitProcesses:
     def test_limit_processes_under_limit(self):
         """Test limiting when process count is under limit."""
         processes = [
-            ProcessInfo(pid=i, name=f"proc{i}", cpu_percent=1.0, memory_mb=10.0, cmdline="", status="running")
+            ProcessInfo(
+                pid=i,
+                name=f"proc{i}",
+                cpu_percent=1.0,
+                memory_mb=10.0,
+                cmdline="",
+                status="running",
+            )
             for i in range(5)
         ]
 
@@ -236,7 +398,14 @@ class TestLimitProcesses:
     def test_limit_processes_over_limit(self):
         """Test limiting when process count exceeds limit."""
         processes = [
-            ProcessInfo(pid=i, name=f"proc{i}", cpu_percent=1.0, memory_mb=10.0, cmdline="", status="running")
+            ProcessInfo(
+                pid=i,
+                name=f"proc{i}",
+                cpu_percent=1.0,
+                memory_mb=10.0,
+                cmdline="",
+                status="running",
+            )
             for i in range(100)
         ]
 
@@ -248,7 +417,14 @@ class TestLimitProcesses:
     def test_limit_processes_exact_limit(self):
         """Test limiting when process count equals limit."""
         processes = [
-            ProcessInfo(pid=i, name=f"proc{i}", cpu_percent=1.0, memory_mb=10.0, cmdline="", status="running")
+            ProcessInfo(
+                pid=i,
+                name=f"proc{i}",
+                cpu_percent=1.0,
+                memory_mb=10.0,
+                cmdline="",
+                status="running",
+            )
             for i in range(10)
         ]
 
@@ -262,7 +438,7 @@ class TestListProcessesIntegration:
     """Integration tests for list_processes function with mocked psutil."""
 
     @pytest.mark.asyncio
-    @patch('src.procexec.tools.processes.psutil.process_iter')
+    @patch("src.procexec.tools.processes.psutil.process_iter")
     async def test_list_processes_success(self, mock_process_iter):
         """Test successful process listing."""
         # Create mock processes
@@ -290,7 +466,7 @@ class TestListProcessesIntegration:
         assert result.retrieval_time_ms >= 0  # May be 0 for very fast mocked tests
 
     @pytest.mark.asyncio
-    @patch('src.procexec.tools.processes.psutil.process_iter')
+    @patch("src.procexec.tools.processes.psutil.process_iter")
     async def test_list_processes_with_filter(self, mock_process_iter):
         """Test process listing with name filter."""
         # Create mock processes
@@ -316,7 +492,7 @@ class TestListProcessesIntegration:
         assert all("python" in proc.name.lower() for proc in result.processes)
 
     @pytest.mark.asyncio
-    @patch('src.procexec.tools.processes.psutil.process_iter')
+    @patch("src.procexec.tools.processes.psutil.process_iter")
     async def test_list_processes_with_limit(self, mock_process_iter):
         """Test process listing with limit."""
         # Create many mock processes
@@ -342,7 +518,7 @@ class TestListProcessesIntegration:
         assert result.truncated is True
 
     @pytest.mark.asyncio
-    @patch('src.procexec.tools.processes.psutil.process_iter')
+    @patch("src.procexec.tools.processes.psutil.process_iter")
     async def test_list_processes_handles_exceptions(self, mock_process_iter):
         """Test that exceptions during process iteration are handled."""
         # Create mock processes, some of which raise exceptions
@@ -368,7 +544,7 @@ class TestListProcessesIntegration:
         assert result.processes[0].name == "valid.exe"
 
     @pytest.mark.asyncio
-    @patch('src.procexec.tools.processes.psutil.process_iter')
+    @patch("src.procexec.tools.processes.psutil.process_iter")
     async def test_list_processes_sort_by_memory(self, mock_process_iter):
         """Test sorting by memory."""
         # Create mock processes with different memory usage
@@ -414,10 +590,11 @@ class TestInputValidation:
 
 # Phase 6: kill_process unit tests
 
+
 class TestValidateProcessExists:
     """Tests for _validate_process_exists helper function."""
 
-    @patch('src.procexec.tools.processes.psutil.pid_exists')
+    @patch("src.procexec.tools.processes.psutil.pid_exists")
     def test_process_exists(self, mock_pid_exists):
         """Test checking for existing process."""
         mock_pid_exists.return_value = True
@@ -427,7 +604,7 @@ class TestValidateProcessExists:
         assert result is True
         mock_pid_exists.assert_called_once_with(1234)
 
-    @patch('src.procexec.tools.processes.psutil.pid_exists')
+    @patch("src.procexec.tools.processes.psutil.pid_exists")
     def test_process_does_not_exist(self, mock_pid_exists):
         """Test checking for non-existent process."""
         mock_pid_exists.return_value = False
@@ -490,7 +667,7 @@ class TestTerminateProcess:
 class TestKillProcessForced:
     """Tests for _kill_process_forced helper function."""
 
-    @patch('src.procexec.tools.processes.psutil.pid_exists')
+    @patch("src.procexec.tools.processes.psutil.pid_exists")
     def test_forced_kill_success(self, mock_pid_exists):
         """Test successful forced kill."""
         mock_proc = Mock(spec=psutil.Process)
@@ -505,7 +682,7 @@ class TestKillProcessForced:
         assert "killed forcefully" in message.lower()
         mock_proc.kill.assert_called_once()
 
-    @patch('src.procexec.tools.processes.psutil.pid_exists')
+    @patch("src.procexec.tools.processes.psutil.pid_exists")
     def test_forced_kill_still_alive(self, mock_pid_exists):
         """Test forced kill when process survives."""
         mock_proc = Mock(spec=psutil.Process)
@@ -544,15 +721,15 @@ class TestKillProcessIntegration:
     """Integration tests for kill_process function with mocked psutil."""
 
     @pytest.mark.asyncio
-    @patch.dict('os.environ', {'PROCEXEC_ENABLE_KILL': 'false'})
+    @patch.dict("os.environ", {"PROCEXEC_ENABLE_KILL": "false"})
     async def test_kill_process_disabled(self):
         """Test that kill_process is disabled by default."""
         with pytest.raises(SanitizedError, match="Process termination is disabled"):
             await kill_process(pid=1234)
 
     @pytest.mark.asyncio
-    @patch.dict('os.environ', {'PROCEXEC_ENABLE_KILL': 'true'})
-    @patch('src.procexec.tools.processes._validate_process_exists')
+    @patch.dict("os.environ", {"PROCEXEC_ENABLE_KILL": "true"})
+    @patch("src.procexec.tools.processes._validate_process_exists")
     async def test_kill_nonexistent_process(self, mock_validate):
         """Test attempting to kill non-existent process."""
         mock_validate.return_value = False
@@ -564,11 +741,13 @@ class TestKillProcessIntegration:
         assert "does not exist" in result.message.lower()
 
     @pytest.mark.asyncio
-    @patch.dict('os.environ', {'PROCEXEC_ENABLE_KILL': 'true'})
-    @patch('src.procexec.tools.processes._validate_process_exists')
-    @patch('src.procexec.tools.processes.psutil.Process')
-    @patch('src.procexec.tools.processes._terminate_process')
-    async def test_kill_process_graceful_success(self, mock_terminate, mock_process_class, mock_validate):
+    @patch.dict("os.environ", {"PROCEXEC_ENABLE_KILL": "true"})
+    @patch("src.procexec.tools.processes._validate_process_exists")
+    @patch("src.procexec.tools.processes.psutil.Process")
+    @patch("src.procexec.tools.processes._terminate_process")
+    async def test_kill_process_graceful_success(
+        self, mock_terminate, mock_process_class, mock_validate
+    ):
         """Test successful graceful process termination."""
         mock_validate.return_value = True
         mock_proc = MagicMock()
@@ -584,11 +763,13 @@ class TestKillProcessIntegration:
         mock_terminate.assert_called_once_with(mock_proc, 5.0)
 
     @pytest.mark.asyncio
-    @patch.dict('os.environ', {'PROCEXEC_ENABLE_KILL': 'true'})
-    @patch('src.procexec.tools.processes._validate_process_exists')
-    @patch('src.procexec.tools.processes.psutil.Process')
-    @patch('src.procexec.tools.processes._kill_process_forced')
-    async def test_kill_process_forced_success(self, mock_kill_forced, mock_process_class, mock_validate):
+    @patch.dict("os.environ", {"PROCEXEC_ENABLE_KILL": "true"})
+    @patch("src.procexec.tools.processes._validate_process_exists")
+    @patch("src.procexec.tools.processes.psutil.Process")
+    @patch("src.procexec.tools.processes._kill_process_forced")
+    async def test_kill_process_forced_success(
+        self, mock_kill_forced, mock_process_class, mock_validate
+    ):
         """Test successful forced process kill."""
         mock_validate.return_value = True
         mock_proc = MagicMock()
@@ -604,9 +785,9 @@ class TestKillProcessIntegration:
         mock_kill_forced.assert_called_once_with(mock_proc)
 
     @pytest.mark.asyncio
-    @patch.dict('os.environ', {'PROCEXEC_ENABLE_KILL': 'true'})
-    @patch('src.procexec.tools.processes._validate_process_exists')
-    @patch('src.procexec.tools.processes.psutil.Process')
+    @patch.dict("os.environ", {"PROCEXEC_ENABLE_KILL": "true"})
+    @patch("src.procexec.tools.processes._validate_process_exists")
+    @patch("src.procexec.tools.processes.psutil.Process")
     async def test_kill_process_access_denied(self, mock_process_class, mock_validate):
         """Test kill process with access denied."""
         mock_validate.return_value = True
@@ -619,10 +800,12 @@ class TestKillProcessIntegration:
         assert "access denied" in result.message.lower()
 
     @pytest.mark.asyncio
-    @patch.dict('os.environ', {'PROCEXEC_ENABLE_KILL': 'true'})
-    @patch('src.procexec.tools.processes._validate_process_exists')
-    @patch('src.procexec.tools.processes.psutil.Process')
-    async def test_kill_process_disappeared_during_operation(self, mock_process_class, mock_validate):
+    @patch.dict("os.environ", {"PROCEXEC_ENABLE_KILL": "true"})
+    @patch("src.procexec.tools.processes._validate_process_exists")
+    @patch("src.procexec.tools.processes.psutil.Process")
+    async def test_kill_process_disappeared_during_operation(
+        self, mock_process_class, mock_validate
+    ):
         """Test process disappearing during kill operation."""
         mock_validate.return_value = True
         mock_process_class.side_effect = psutil.NoSuchProcess(1234)
@@ -634,16 +817,21 @@ class TestKillProcessIntegration:
         assert "no longer exists" in result.message.lower()
 
     @pytest.mark.asyncio
-    @patch.dict('os.environ', {'PROCEXEC_ENABLE_KILL': 'true'})
-    @patch('src.procexec.tools.processes._validate_process_exists')
-    @patch('src.procexec.tools.processes.psutil.Process')
-    @patch('src.procexec.tools.processes._terminate_process')
-    async def test_kill_process_graceful_failure(self, mock_terminate, mock_process_class, mock_validate):
+    @patch.dict("os.environ", {"PROCEXEC_ENABLE_KILL": "true"})
+    @patch("src.procexec.tools.processes._validate_process_exists")
+    @patch("src.procexec.tools.processes.psutil.Process")
+    @patch("src.procexec.tools.processes._terminate_process")
+    async def test_kill_process_graceful_failure(
+        self, mock_terminate, mock_process_class, mock_validate
+    ):
         """Test graceful termination that fails (timeout)."""
         mock_validate.return_value = True
         mock_proc = MagicMock()
         mock_process_class.return_value = mock_proc
-        mock_terminate.return_value = (False, "Process did not terminate within 5.0s timeout")
+        mock_terminate.return_value = (
+            False,
+            "Process did not terminate within 5.0s timeout",
+        )
 
         result = await kill_process(pid=1234, force=False, timeout_seconds=5.0)
 
@@ -657,28 +845,28 @@ class TestKillProcessInputValidation:
     """Tests for kill_process input validation."""
 
     @pytest.mark.asyncio
-    @patch.dict('os.environ', {'PROCEXEC_ENABLE_KILL': 'true'})
+    @patch.dict("os.environ", {"PROCEXEC_ENABLE_KILL": "true"})
     async def test_invalid_pid_zero(self):
         """Test that PID 0 is rejected."""
         with pytest.raises(ValueError):
             await kill_process(pid=0)
 
     @pytest.mark.asyncio
-    @patch.dict('os.environ', {'PROCEXEC_ENABLE_KILL': 'true'})
+    @patch.dict("os.environ", {"PROCEXEC_ENABLE_KILL": "true"})
     async def test_invalid_pid_negative(self):
         """Test that negative PID is rejected."""
         with pytest.raises(ValueError):
             await kill_process(pid=-1)
 
     @pytest.mark.asyncio
-    @patch.dict('os.environ', {'PROCEXEC_ENABLE_KILL': 'true'})
+    @patch.dict("os.environ", {"PROCEXEC_ENABLE_KILL": "true"})
     async def test_invalid_timeout_too_small(self):
         """Test that timeout < 0.1 is rejected."""
         with pytest.raises(ValueError):
             await kill_process(pid=1234, timeout_seconds=0.05)
 
     @pytest.mark.asyncio
-    @patch.dict('os.environ', {'PROCEXEC_ENABLE_KILL': 'true'})
+    @patch.dict("os.environ", {"PROCEXEC_ENABLE_KILL": "true"})
     async def test_invalid_timeout_too_large(self):
         """Test that timeout > 30 is rejected."""
         with pytest.raises(ValueError):

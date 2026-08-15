@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Pydantic schemas for tool input/output validation and error handling."""
 
 from enum import Enum

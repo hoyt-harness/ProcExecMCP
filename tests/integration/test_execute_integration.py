@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Integration tests for execute_command tool with real command execution."""
 
 import pytest
@@ -24,7 +25,7 @@ class TestBasicCommandExecution:
     async def test_execute_echo_command(self):
         """Test executing echo command."""
         if platform.system() == "Windows":
-            result = await execute_command('echo Hello World')
+            result = await execute_command("echo Hello World")
         else:
             result = await execute_command('echo "Hello World"')
 
@@ -49,8 +50,7 @@ class TestWorkingDirectory:
         """Test command execution with specified working directory."""
         # Use Python to verify cwd is set correctly (cross-platform)
         result = await execute_command(
-            "python -c \"import os; print(os.getcwd())\"",
-            working_directory=str(tmp_path)
+            'python -c "import os; print(os.getcwd())"', working_directory=str(tmp_path)
         )
 
         # Normalize paths for comparison (resolve symlinks, etc.)
@@ -72,8 +72,7 @@ class TestWorkingDirectory:
             SanitizedError, match="Invalid working directory|does not exist"
         ):
             await execute_command(
-                "python --version",
-                working_directory="/completely/nonexistent/path"
+                "python --version", working_directory="/completely/nonexistent/path"
             )
 
     @pytest.mark.asyncio
@@ -83,10 +82,7 @@ class TestWorkingDirectory:
         test_file.write_text("content")
 
         with pytest.raises(SanitizedError, match="not a directory"):
-            await execute_command(
-                "python --version",
-                working_directory=str(test_file)
-            )
+            await execute_command("python --version", working_directory=str(test_file))
 
 
 class TestTimeoutEnforcement:
@@ -97,8 +93,8 @@ class TestTimeoutEnforcement:
         """Test that timeout is enforced for long-running commands."""
         # Use Python time.sleep for cross-platform consistency
         result = await execute_command(
-            "python -c \"import time; time.sleep(5)\"",
-            timeout_ms=1000  # 1 second timeout
+            'python -c "import time; time.sleep(5)"',
+            timeout_ms=1000,  # 1 second timeout
         )
 
         assert result.timed_out is True
@@ -110,7 +106,7 @@ class TestTimeoutEnforcement:
         """Test that fast commands complete within timeout."""
         result = await execute_command(
             "python --version",
-            timeout_ms=30000  # 30 second timeout (generous)
+            timeout_ms=30000,  # 30 second timeout (generous)
         )
 
         assert result.timed_out is False
@@ -132,9 +128,7 @@ class TestExitCodeHandling:
     async def test_execute_failing_command_nonzero_exit(self):
         """Test that failing commands return non-zero exit code."""
         # Try to execute non-existent Python script
-        result = await execute_command(
-            "python -c \"import sys; sys.exit(42)\""
-        )
+        result = await execute_command('python -c "import sys; sys.exit(42)"')
 
         assert result.exit_code == 42
 
@@ -151,7 +145,7 @@ class TestOutputCapture:
     @pytest.mark.asyncio
     async def test_execute_captures_stdout(self):
         """Test that stdout is captured correctly."""
-        result = await execute_command('python -c "print(\'stdout test\')"')
+        result = await execute_command("python -c \"print('stdout test')\"")
 
         assert "stdout test" in result.stdout
         assert result.exit_code == 0
@@ -160,7 +154,7 @@ class TestOutputCapture:
     async def test_execute_captures_stderr(self):
         """Test that stderr is captured correctly."""
         result = await execute_command(
-            'python -c "import sys; sys.stderr.write(\'stderr test\\n\')"'
+            "python -c \"import sys; sys.stderr.write('stderr test\\n')\""
         )
 
         assert "stderr test" in result.stderr
@@ -170,7 +164,7 @@ class TestOutputCapture:
     async def test_execute_captures_both_stdout_and_stderr(self):
         """Test that both stdout and stderr are captured."""
         result = await execute_command(
-            'python -c "import sys; print(\'stdout\'); sys.stderr.write(\'stderr\\n\')"'
+            "python -c \"import sys; print('stdout'); sys.stderr.write('stderr\\n')\""
         )
 
         assert "stdout" in result.stdout
@@ -186,19 +180,22 @@ class TestOutputTruncation:
         # Generate large output (attempt to create >10MB output)
         if platform.system() == "Windows":
             # Generate many lines of output
-            command = 'python -c "for i in range(100000): print(\'x\' * 100)"'
+            command = "python -c \"for i in range(100000): print('x' * 100)\""
         else:
             # Use yes command for large output
             command = "python -c \"for i in range(100000): print('x' * 100)\""
 
         result = await execute_command(
             command,
-            timeout_ms=10000  # 10 second timeout
+            timeout_ms=10000,  # 10 second timeout
         )
 
         # Check if output was truncated
         if result.output_truncated:
-            assert "[Output truncated...]" in result.stdout or "[Output truncated...]" in result.stderr
+            assert (
+                "[Output truncated...]" in result.stdout
+                or "[Output truncated...]" in result.stderr
+            )
         # Note: Truncation depends on config.max_output_bytes
 
 
@@ -208,7 +205,7 @@ class TestCommandParsing:
     @pytest.mark.asyncio
     async def test_execute_command_with_quotes(self):
         """Test command parsing with quoted arguments."""
-        result = await execute_command('python -c "print(\'hello world\')"')
+        result = await execute_command("python -c \"print('hello world')\"")
 
         assert "hello world" in result.stdout
         assert result.exit_code == 0
@@ -222,8 +219,8 @@ class TestCommandParsing:
 
         # Use Python to verify cwd is set correctly (cross-platform)
         result = await execute_command(
-            "python -c \"import os; print(os.getcwd())\"",
-            working_directory=str(dir_with_spaces)
+            'python -c "import os; print(os.getcwd())"',
+            working_directory=str(dir_with_spaces),
         )
 
         # Normalize paths for comparison
@@ -256,14 +253,14 @@ class TestUtf8OutputDecoding:
         # Write raw UTF-8 bytes directly to the pipe, bypassing sys.stdout
         # text-mode encoding — same as what gws and other UTF-8 binaries do.
         result = await execute_command(
-            "python -c \"import sys; sys.stdout.buffer.write("
+            'python -c "import sys; sys.stdout.buffer.write('
             "'caf\\u00e9 \\u2014 r\\u00e9sum\\u00e9\\n'.encode('utf-8'))\""
         )
 
         assert result.exit_code == 0
-        assert 'café' in result.stdout
-        assert '—' in result.stdout
-        assert 'résumé' in result.stdout
+        assert "café" in result.stdout
+        assert "—" in result.stdout
+        assert "résumé" in result.stdout
 
 
 class TestInputValidation:

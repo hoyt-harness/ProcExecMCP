@@ -12,12 +12,7 @@ CLAUDE.md
 *.idb
 *.pdb
 *.xml
-launch-inspector.ps1
 
-# Documentation build artifacts
-docs/_build/
-docs/build/
-docs/html/
 *.pdf~
 
 # Editor files

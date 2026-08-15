@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """execute_command tool implementation with security measures."""
 
 import shlex

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Integration tests for list_processes and kill_process tools with real psutil."""
 
 import os
@@ -28,7 +29,9 @@ class TestBasicProcessListing:
         # Check that at least one process has valid data
         first_proc = result.processes[0]
         assert first_proc.pid >= 0  # PID 0 is valid (System Idle Process on Windows)
-        assert first_proc.name is not None  # Name may be empty for some system processes
+        assert (
+            first_proc.name is not None
+        )  # Name may be empty for some system processes
         assert first_proc.cpu_percent >= 0.0
         assert first_proc.memory_mb >= 0.0
         assert first_proc.status != ""
@@ -90,9 +93,7 @@ class TestProcessFiltering:
     @pytest.mark.asyncio
     async def test_filter_nonexistent_process(self):
         """Test filtering with name that doesn't match any processes."""
-        result = await list_processes(
-            name_filter="totally_fake_process_name_xyz123"
-        )
+        result = await list_processes(name_filter="totally_fake_process_name_xyz123")
 
         # Should return empty list
         assert len(result.processes) == 0
@@ -183,9 +184,7 @@ class TestCombinedOperations:
     async def test_filter_and_sort_by_memory(self):
         """Test filtering by name and sorting by memory."""
         result = await list_processes(
-            name_filter="python",
-            sort_by=ProcessSortBy.MEMORY,
-            limit=5
+            name_filter="python", sort_by=ProcessSortBy.MEMORY, limit=5
         )
 
         # All processes should contain "python" in name
@@ -201,9 +200,7 @@ class TestCombinedOperations:
     async def test_filter_sort_and_limit(self):
         """Test full pipeline: filter, sort, limit."""
         result = await list_processes(
-            name_filter="python",
-            sort_by=ProcessSortBy.CPU,
-            limit=3
+            name_filter="python", sort_by=ProcessSortBy.CPU, limit=3
         )
 
         # Should return at most 3 processes
@@ -280,7 +277,9 @@ class TestInputValidation:
 
 
 class TestIndependentTestCriteria:
-    """Independent test from spec.md: List all processes, verify fields, filter by 'python'."""
+    """
+    Independent test from spec.md: list processes, verify fields, filter by 'python'.
+    """
 
     @pytest.mark.asyncio
     async def test_independent_test_list_and_filter(self):
@@ -295,8 +294,12 @@ class TestIndependentTestCriteria:
         # Verify all required fields are present
         assert len(result_all.processes) > 0
         for proc in result_all.processes:
-            assert proc.pid >= 0, "PID should be non-negative (0 is valid for System Idle Process)"
-            assert proc.name is not None, "Name should exist (may be empty for system processes)"
+            assert proc.pid >= 0, (
+                "PID should be non-negative (0 is valid for System Idle Process)"
+            )
+            assert proc.name is not None, (
+                "Name should exist (may be empty for system processes)"
+            )
             assert proc.cpu_percent >= 0.0, "CPU% should be non-negative"
             assert proc.memory_mb >= 0.0, "Memory should be non-negative"
             # cmdline may be empty (permission denied), so just check it exists
@@ -307,8 +310,9 @@ class TestIndependentTestCriteria:
 
         # Verify only Python processes returned
         for proc in result_python.processes:
-            assert "python" in proc.name.lower(), \
+            assert "python" in proc.name.lower(), (
                 f"Process {proc.name} should contain 'python'"
+            )
 
         # If any Python processes exist, verify they have valid data
         if len(result_python.processes) > 0:
@@ -321,6 +325,7 @@ class TestIndependentTestCriteria:
 
 # Phase 6: kill_process integration tests
 
+
 class TestProcessTermination:
     """Tests for kill_process tool with real process termination."""
 
@@ -330,7 +335,7 @@ class TestProcessTermination:
         proc = subprocess.Popen(
             [sys.executable, "-c", "import time; time.sleep(300)"],
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+            stderr=subprocess.PIPE,
         )
 
         # Wait a bit to ensure process is started
@@ -365,7 +370,9 @@ class TestProcessTermination:
             assert psutil.pid_exists(test_proc.pid), "Test process should be running"
 
             # Terminate it gracefully
-            result = await kill_process(pid=test_proc.pid, force=False, timeout_seconds=5.0)
+            result = await kill_process(
+                pid=test_proc.pid, force=False, timeout_seconds=5.0
+            )
 
             # Verify result
             assert result.success is True, "Termination should succeed"
@@ -375,14 +382,16 @@ class TestProcessTermination:
 
             # Verify process is actually gone
             time.sleep(0.5)
-            assert not psutil.pid_exists(test_proc.pid), "Process should no longer exist"
+            assert not psutil.pid_exists(test_proc.pid), (
+                "Process should no longer exist"
+            )
 
         finally:
             # Cleanup: force kill if still alive
             try:
                 test_proc.kill()
                 test_proc.wait(timeout=1)
-            except Exception:  # nosec S110 — kill() in test cleanup; failure is intentional
+            except Exception:  # noqa: S110
                 pass
 
     @pytest.mark.asyncio
@@ -407,14 +416,16 @@ class TestProcessTermination:
 
             # Verify process is actually gone
             time.sleep(0.5)
-            assert not psutil.pid_exists(test_proc.pid), "Process should no longer exist"
+            assert not psutil.pid_exists(test_proc.pid), (
+                "Process should no longer exist"
+            )
 
         finally:
             # Cleanup
             try:
                 test_proc.kill()
                 test_proc.wait(timeout=1)
-            except Exception:
+            except Exception:  # noqa: S110
                 pass
 
     @pytest.mark.asyncio
@@ -448,13 +459,15 @@ class TestProcessTermination:
 
             # Verify timing is recorded
             assert result.termination_time_ms >= 0
-            assert result.termination_time_ms < 5000, "Should terminate quickly with force=True"
+            assert result.termination_time_ms < 5000, (
+                "Should terminate quickly with force=True"
+            )
 
         finally:
             try:
                 test_proc.kill()
                 test_proc.wait(timeout=1)
-            except Exception:
+            except Exception:  # noqa: S110
                 pass
 
 
@@ -476,7 +489,7 @@ class TestIndependentTestKillProcess:
             test_proc = subprocess.Popen(
                 [sys.executable, "-c", "import time; time.sleep(300)"],
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
+                stderr=subprocess.PIPE,
             )
 
             time.sleep(0.5)  # Let process start
@@ -494,13 +507,14 @@ class TestIndependentTestKillProcess:
 
             # Step 4: Verify process no longer exists
             time.sleep(0.5)  # Give it time to fully terminate
-            assert not psutil.pid_exists(test_pid), \
+            assert not psutil.pid_exists(test_pid), (
                 "Process should no longer exist after kill_process"
+            )
 
         finally:
             # Cleanup
             try:
                 test_proc.kill()
                 test_proc.wait(timeout=1)
-            except Exception:
+            except Exception:  # noqa: S110
                 pass

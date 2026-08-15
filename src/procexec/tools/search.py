@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """search_file_contents tool implementation using ripgrep."""
 
 import json

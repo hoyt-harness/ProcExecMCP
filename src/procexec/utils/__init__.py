@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Utility functions for validation, platform detection, and error handling."""
 
 __all__ = [

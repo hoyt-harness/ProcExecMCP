@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """MCP tools for command execution and process management."""
 
 from .execute import execute_command

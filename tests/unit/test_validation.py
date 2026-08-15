@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Unit tests for validation utilities."""
 
 import pytest
@@ -8,7 +9,7 @@ from src.procexec.utils.validation import (
     validate_file,
     sanitize_path,
     sanitize_error_message,
-    SanitizedError
+    SanitizedError,
 )
 
 
@@ -49,6 +50,7 @@ class TestValidatePath:
 
         # Use relative path
         import os
+
         old_cwd = os.getcwd()
         try:
             os.chdir(tmp_path)

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Security tests for shell injection prevention in execute_command.
 
 These tests verify that the execute_command tool is immune to shell injection
@@ -146,8 +147,8 @@ class TestShellInjectionPrevention:
             dangerous_command = "python --version > C:\\temp\\injected.txt"
             target_file = "C:\\temp\\injected.txt"
         else:
-            dangerous_command = "python --version > /tmp/injected.txt"
-            target_file = "/tmp/injected.txt"
+            dangerous_command = "python --version > /tmp/injected.txt"  # noqa: S108
+            target_file = "/tmp/injected.txt"  # noqa: S108
 
         try:
             result = await execute_command(dangerous_command)
@@ -159,6 +160,7 @@ class TestShellInjectionPrevention:
 
             # Verify file was NOT created (redirection was prevented)
             from pathlib import Path
+
             assert not Path(target_file).exists()
 
         except (SanitizedError, ValueError):
@@ -220,7 +222,7 @@ class TestArgumentParsingSafety:
     async def test_quoted_arguments_safe(self):
         """Test that quoted arguments are parsed safely."""
         # This should be safe - quoted string is an argument
-        result = await execute_command('python -c "print(\'hello\')"')
+        result = await execute_command("python -c \"print('hello')\"")
 
         assert result.exit_code == 0
         assert "hello" in result.stdout
@@ -229,7 +231,7 @@ class TestArgumentParsingSafety:
     async def test_arguments_with_special_chars_safe(self):
         """Test that arguments with special characters are handled safely."""
         # Test various special characters that should be safe when properly parsed
-        result = await execute_command('python -c "print(\'test@#$%\')"')
+        result = await execute_command("python -c \"print('test@#$%')\"")
 
         assert result.exit_code == 0
         assert "test@#$%" in result.stdout
@@ -242,8 +244,7 @@ class TestArgumentParsingSafety:
 
         # Should handle spaces safely
         result = await execute_command(
-            "python --version",
-            working_directory=str(dir_with_spaces)
+            "python --version", working_directory=str(dir_with_spaces)
         )
 
         assert result.exit_code == 0

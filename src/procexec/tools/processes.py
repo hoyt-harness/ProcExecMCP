@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """list_processes tool implementation with psutil integration."""
 
 import time

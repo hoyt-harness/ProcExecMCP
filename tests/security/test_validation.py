@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Security tests for path validation and traversal prevention."""
 
 import pytest
@@ -55,7 +56,11 @@ class TestSensitivePathBlocking:
                     assert not str(result).startswith("/etc/passwd")
                 except ValueError as e:
                     # Expected - path is blocked or doesn't resolve properly
-                    assert "sensitive" in str(e) or "does not exist" in str(e) or "Invalid" in str(e)
+                    assert (
+                        "sensitive" in str(e)
+                        or "does not exist" in str(e)
+                        or "Invalid" in str(e)
+                    )
 
     def test_block_sensitive_windows_paths(self):
         """Test that sensitive Windows paths are blocked when they match."""
@@ -72,11 +77,19 @@ class TestSensitivePathBlocking:
                     result = validate_path(path, must_exist=False)
                     # If validation succeeds, verify it doesn't resolve to blocked path
                     result_str = str(result).lower()
-                    assert not result_str.startswith("c:\\windows\\system32\\config".lower())
-                    assert not result_str.startswith("c:\\windows\\system32\\drivers".lower())
+                    assert not result_str.startswith(
+                        "c:\\windows\\system32\\config".lower()
+                    )
+                    assert not result_str.startswith(
+                        "c:\\windows\\system32\\drivers".lower()
+                    )
                 except ValueError as e:
                     # Expected - path is blocked
-                    assert "sensitive" in str(e) or "does not exist" in str(e) or "Invalid" in str(e)
+                    assert (
+                        "sensitive" in str(e)
+                        or "does not exist" in str(e)
+                        or "Invalid" in str(e)
+                    )
 
     def test_case_insensitive_blocking(self):
         """Test that path blocking is case-insensitive."""

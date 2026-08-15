@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Cross-platform utility functions for detecting and handling platform differences."""
 
 import platform

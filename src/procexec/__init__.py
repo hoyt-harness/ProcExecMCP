@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """ProcExecMCP - Stateless command execution and process management MCP server.
 
 This package provides four MCP tools for Claude to perform architectural code review:

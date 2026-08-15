@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Security tests for search_file_contents tool."""
 
 import pytest
@@ -18,10 +19,7 @@ class TestSearchPathTraversal:
 
         for path in dangerous_paths:
             with pytest.raises((ValueError, SanitizedError)):
-                await search_file_contents(
-                    pattern="test",
-                    path=path
-                )
+                await search_file_contents(pattern="test", path=path)
 
     @pytest.mark.asyncio
     async def test_search_sensitive_system_paths(self):
@@ -35,10 +33,7 @@ class TestSearchPathTraversal:
 
         for path in sensitive_paths:
             with pytest.raises((ValueError, SanitizedError)):
-                await search_file_contents(
-                    pattern="test",
-                    path=path
-                )
+                await search_file_contents(pattern="test", path=path)
 
 
 class TestSearchRegexLimits:
@@ -55,10 +50,7 @@ class TestSearchRegexLimits:
         long_pattern = "a" * 1001
 
         with pytest.raises((ValueError, SanitizedError)):
-            await search_file_contents(
-                pattern=long_pattern,
-                path=str(tmp_path)
-            )
+            await search_file_contents(pattern=long_pattern, path=str(tmp_path))
 
     @pytest.mark.asyncio
     async def test_empty_pattern_rejected(self, tmp_path):
@@ -67,10 +59,7 @@ class TestSearchRegexLimits:
         test_file.write_text("test content")
 
         with pytest.raises((ValueError, SanitizedError)):
-            await search_file_contents(
-                pattern="",
-                path=str(tmp_path)
-            )
+            await search_file_contents(pattern="", path=str(tmp_path))
 
     @pytest.mark.asyncio
     async def test_max_pattern_length_accepted(self, tmp_path):
@@ -82,13 +71,10 @@ class TestSearchRegexLimits:
         max_pattern = "a" * 1000
 
         # Should not raise exception
-        result = await search_file_contents(
-            pattern=max_pattern,
-            path=str(tmp_path)
-        )
+        result = await search_file_contents(pattern=max_pattern, path=str(tmp_path))
 
         assert result is not None
-        assert hasattr(result, 'matches')
+        assert hasattr(result, "matches")
 
 
 class TestSearchMaxResultsEnforcement:
@@ -106,9 +92,7 @@ class TestSearchMaxResultsEnforcement:
 
         # Search with max_results=50
         result = await search_file_contents(
-            pattern="MATCH",
-            path=str(tmp_path),
-            max_results=50
+            pattern="MATCH", path=str(tmp_path), max_results=50
         )
 
         # Should return at most 50 matches
@@ -124,9 +108,7 @@ class TestSearchMaxResultsEnforcement:
 
         with pytest.raises((ValueError, SanitizedError)):
             await search_file_contents(
-                pattern="test",
-                path=str(tmp_path),
-                max_results=0
+                pattern="test", path=str(tmp_path), max_results=0
             )
 
     @pytest.mark.asyncio
@@ -137,9 +119,7 @@ class TestSearchMaxResultsEnforcement:
 
         with pytest.raises((ValueError, SanitizedError)):
             await search_file_contents(
-                pattern="test",
-                path=str(tmp_path),
-                max_results=10001
+                pattern="test", path=str(tmp_path), max_results=10001
             )
 
 
@@ -156,10 +136,7 @@ class TestSearchLargeResultSets:
         test_file.write_text(content)
 
         # Search with default max_results (1000)
-        result = await search_file_contents(
-            pattern="FINDME",
-            path=str(tmp_path)
-        )
+        result = await search_file_contents(pattern="FINDME", path=str(tmp_path))
 
         # Should be truncated
         assert len(result.matches) <= 1000
@@ -178,7 +155,7 @@ class TestSearchLargeResultSets:
         result = await search_file_contents(
             pattern="PATTERN",
             path=str(tmp_path),
-            max_results=50  # Limit results
+            max_results=50,  # Limit results
         )
 
         # Should handle gracefully
@@ -197,9 +174,7 @@ class TestSearchContextLinesValidation:
 
         with pytest.raises((ValueError, SanitizedError)):
             await search_file_contents(
-                pattern="test",
-                path=str(tmp_path),
-                context_lines=-1
+                pattern="test", path=str(tmp_path), context_lines=-1
             )
 
     @pytest.mark.asyncio
@@ -210,9 +185,7 @@ class TestSearchContextLinesValidation:
 
         with pytest.raises((ValueError, SanitizedError)):
             await search_file_contents(
-                pattern="test",
-                path=str(tmp_path),
-                context_lines=11
+                pattern="test", path=str(tmp_path), context_lines=11
             )
 
     @pytest.mark.asyncio
@@ -224,9 +197,7 @@ class TestSearchContextLinesValidation:
         test_file.write_text(content)
 
         result = await search_file_contents(
-            pattern="Line 25",
-            path=str(tmp_path),
-            context_lines=10
+            pattern="Line 25", path=str(tmp_path), context_lines=10
         )
 
         assert result is not None
@@ -244,9 +215,7 @@ class TestSearchExclusionPatterns:
         # Exclusion patterns with traversal attempts should still be safe
         # because the search path itself is validated
         result = await search_file_contents(
-            pattern="test",
-            path=str(tmp_path),
-            exclude_patterns=["../../etc/passwd"]
+            pattern="test", path=str(tmp_path), exclude_patterns=["../../etc/passwd"]
         )
 
         # Should execute without error (path validation happens on search path)
@@ -260,9 +229,7 @@ class TestSearchExclusionPatterns:
         (tmp_path / "exclude.txt").write_text("FIND this too")
 
         result = await search_file_contents(
-            pattern="FIND",
-            path=str(tmp_path),
-            exclude_patterns=["exclude.txt"]
+            pattern="FIND", path=str(tmp_path), exclude_patterns=["exclude.txt"]
         )
 
         # Should only find in include.txt
@@ -283,12 +250,11 @@ class TestSearchTimeout:
             test_file.write_text(content)
 
         import time
+
         start = time.time()
 
         result = await search_file_contents(
-            pattern="Line",
-            path=str(tmp_path),
-            max_results=100
+            pattern="Line", path=str(tmp_path), max_results=100
         )
 
         elapsed = time.time() - start

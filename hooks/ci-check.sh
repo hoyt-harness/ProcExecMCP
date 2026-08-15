@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
 # Single source of truth for CI/code-quality checks.
 # Invoked locally by hooks/pre-push (blocking) and by .github/workflows/ci.yml
-# (confirmation only) — both run this exact script so local and CI cannot drift.
+# (confirmation only) — both run this script so local and CI cannot drift.
 set -e
 
 uv sync --extra dev
